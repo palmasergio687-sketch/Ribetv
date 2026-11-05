@@ -1,143 +1,100 @@
-
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
-void main() {
-  runApp(const WorldTV());
-}
+void main() => runApp(const RibetvApp());
 
-class WorldTV extends StatelessWidget {
-  const WorldTV({super.key});
-
+class RibetvApp extends StatelessWidget {
+  const RibetvApp({super.key});
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'WORLD TV PARAGUAY',
-      theme: ThemeData.dark().copyWith(
-        scaffoldBackgroundColor: const Color(0xFF101418),
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF20C9B9),
-          brightness: Brightness.dark,
-        ),
-      ),
-      home: const HomeTV(),
-    );
-  }
+  Widget build(BuildContext context) => MaterialApp(
+    debugShowCheckedModeBanner: false,
+    title: 'Ribetv',
+    theme: ThemeData.dark().copyWith(
+      scaffoldBackgroundColor: const Color(0xFF101418),
+      colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF20C9B9), brightness: Brightness.dark),
+    ),
+    home: const HomePage(),
+  );
 }
 
-class HomeTV extends StatelessWidget {
-  const HomeTV({super.key});
+class TvChannel {
+  final String name, url;
+  const TvChannel(this.name, this.url);
+}
 
-  final List<Map<String, String>> channels = const [
-    {'name': 'Paraguay', 'category': 'Nacionales', 'url': 'https://www.youtube.com/results?search_query=television+paraguay+en+vivo'},
-    {'name': 'Argentina', 'category': 'Nacionales', 'url': 'https://www.youtube.com/results?search_query=canales+argentina+en+vivo'},
-    {'name': 'Uruguay', 'category': 'Nacionales', 'url': 'https://www.youtube.com/results?search_query=television+uruguay+en+vivo'},
-    {'name': 'Brasil', 'category': 'Nacionales', 'url': 'https://www.youtube.com/results?search_query=television+brasil+ao+vivo'},
-    {'name': 'Chile', 'category': 'Nacionales', 'url': 'https://www.youtube.com/results?search_query=television+chile+en+vivo'},
-    {'name': 'Deportes Paraguay', 'category': 'Deportes', 'url': 'https://www.youtube.com/results?search_query=deportes+paraguay+en+vivo'},
-    {'name': 'Fútbol internacional', 'category': 'Deportes', 'url': 'https://www.youtube.com/results?search_query=futbol+en+vivo+oficial'},
-    {'name': 'ESPN', 'category': 'Premium', 'url': 'https://www.espn.com/watch/'},
-    {'name': 'Tigo Sports', 'category': 'Premium', 'url': 'https://www.tigosports.com.py/'},
+class HomePage extends StatelessWidget {
+  const HomePage({super.key});
+  static const channels = [
+    TvChannel('Telefuturo', 'https://www.telefuturo.com.py/envivo'),
+    TvChannel('SNT', 'https://www.snt.com.py/envivo/'),
   ];
 
-  Future<void> openChannel(String url) async {
-    final uri = Uri.parse(url);
-    await launchUrl(uri, mode: LaunchMode.externalApplication);
-  }
-
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: const Color(0xFF101418),
-        title: const Text(
-          'WORLD TV PARAGUAY',
-          style: TextStyle(
-            color: Color(0xFF20C9B9),
-            fontWeight: FontWeight.bold,
-          ),
+  Widget build(BuildContext context) => Scaffold(
+    appBar: AppBar(title: const Text('RIBETV PARAGUAY', style: TextStyle(color: Color(0xFF20C9B9), fontWeight: FontWeight.bold))),
+    body: ListView(padding: const EdgeInsets.all(16), children: [
+      Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(colors: [Color(0xFF087F79), Color(0xFF172C39)]),
+          borderRadius: BorderRadius.circular(16),
         ),
-        actions: const [
-          Padding(
-            padding: EdgeInsets.all(12),
-            child: Icon(Icons.live_tv, color: Color(0xFF20C9B9)),
-          )
-        ],
+        child: const Text('TELEVISIÓN PARAGUAYA\nReproducción dentro de Ribetv', style: TextStyle(fontSize: 21, fontWeight: FontWeight.bold)),
       ),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                colors: [Color(0xFF087F79), Color(0xFF172C39)],
-              ),
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: const Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('TELEVISIÓN EN VIVO',
-                    style: TextStyle(fontSize: 23, fontWeight: FontWeight.bold)),
-                SizedBox(height: 8),
-                Text('Tus canales favoritos en un solo lugar'),
-              ],
-            ),
-          ),
-          const SizedBox(height: 24),
-          for (final category in ['Nacionales', 'Deportes', 'Premium']) ...[
-            Text(
-              category == 'Nacionales'
-                  ? '🌎 CANALES POR PAÍS'
-                  : category == 'Deportes'
-                      ? '⚽ DEPORTES EN VIVO'
-                      : '⭐ SERVICIOS PREMIUM',
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF20C9B9),
-              ),
-            ),
-            const SizedBox(height: 12),
-            ...channels.where((c) => c['category'] == category).map(
-              (channel) => Card(
-                color: const Color(0xFF202930),
-                margin: const EdgeInsets.only(bottom: 10),
-                child: ListTile(
-                  leading: const CircleAvatar(
-                    backgroundColor: Color(0xFF087F79),
-                    child: Icon(Icons.live_tv, color: Colors.white),
-                  ),
-                  title: Text(
-                    channel['name']!,
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  subtitle: Text(
-                    category == 'Premium'
-                        ? 'Acceso con tu propia suscripción'
-                        : 'Abrir señal o transmisión disponible',
-                  ),
-                  trailing: const Icon(
-                    Icons.play_circle_fill,
-                    color: Color(0xFF20C9B9),
-                    size: 32,
-                  ),
-                  onTap: () => openChannel(channel['url']!),
-                ),
-              ),
-            ),
-            const SizedBox(height: 20),
-          ],
-          const Center(
-            child: Text(
-              'WORLD TV PARAGUAY • 2026',
-              style: TextStyle(color: Colors.white54),
-            ),
-          ),
-        ],
-      ),
-    );
+      const SizedBox(height: 24),
+      const Text('🇵🇾 CANALES NACIONALES', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF20C9B9))),
+      const SizedBox(height: 12),
+      ...channels.map((c) => Card(
+        color: const Color(0xFF202930),
+        child: ListTile(
+          leading: const CircleAvatar(backgroundColor: Color(0xFF087F79), child: Icon(Icons.live_tv, color: Colors.white)),
+          title: Text(c.name, style: const TextStyle(fontWeight: FontWeight.bold)),
+          subtitle: const Text('Página oficial • señal en vivo si está disponible'),
+          trailing: const Icon(Icons.play_circle_fill, color: Color(0xFF20C9B9), size: 32),
+          onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => PlayerPage(channel: c))),
+        ),
+      )),
+      const SizedBox(height: 12),
+      const Text('La reproducción depende de que cada emisora permita ver su señal desde aplicaciones externas. Ribetv no aloja ni retransmite señales.', style: TextStyle(color: Colors.white60, fontSize: 12)),
+    ]),
+  );
+}
+
+class PlayerPage extends StatefulWidget {
+  final TvChannel channel;
+  const PlayerPage({super.key, required this.channel});
+  @override
+  State<PlayerPage> createState() => _PlayerPageState();
+}
+
+class _PlayerPageState extends State<PlayerPage> {
+  late final WebViewController controller;
+  bool loading = true;
+  String? error;
+  @override
+  void initState() {
+    super.initState();
+    controller = WebViewController()
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setNavigationDelegate(NavigationDelegate(
+        onPageStarted: (_) { if (mounted) setState(() { loading = true; error = null; }); },
+        onPageFinished: (_) { if (mounted) setState(() => loading = false); },
+        onWebResourceError: (e) {
+          if (mounted && e.isForMainFrame == true) setState(() {
+            loading = false;
+            error = 'No se pudo cargar la señal. El canal puede limitar la reproducción integrada.';
+          });
+        },
+      ))
+      ..loadRequest(Uri.parse(widget.channel.url));
   }
+  @override
+  Widget build(BuildContext context) => Scaffold(
+    appBar: AppBar(title: Text(widget.channel.name)),
+    body: Stack(children: [
+      WebViewWidget(controller: controller),
+      if (loading) const Align(alignment: Alignment.topCenter, child: LinearProgressIndicator()),
+      if (error != null) Center(child: Padding(padding: const EdgeInsets.all(24), child: Text(error!, textAlign: TextAlign.center))),
+    ]),
+  );
 }
